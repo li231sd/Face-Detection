@@ -12,12 +12,3 @@ clf.fit(softmax_outputs, true_labels)
 
 print("✅ SVM trained on Neural Network outputs.")
 
-import joblib
-joblib.dump(clf, 'svm_face_classifier.joblib')
-
-# Example of how to predict (later during live use)
-def predict_with_svm(softmax_vector):
-    softmax_vector = np.array(softmax_vector).reshape(1, -1)  
-    prediction = clf.predict(softmax_vector)[0]
-    confidence = clf.predict_proba(softmax_vector)[0].max()
-    return prediction, confidence
