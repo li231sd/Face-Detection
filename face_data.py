@@ -182,7 +182,7 @@ while True:
 
 
         # ADDED BY SAHIL
-        name = double_check_with_svm(predictions, clf)
+        check = double_check_with_svm(predictions, clf) # TODO: I did not want to touch how you made your predictions, so if everything is fine just merge this with your code 
 
 
 
