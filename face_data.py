@@ -5,6 +5,13 @@ import numpy as np
 import tensorflow as tf
 from datetime import datetime
 
+
+
+import joblib # ADDED BY SAHIL
+
+
+
+
 # Directory to store known face encodings and training images
 known_faces_dir = 'known_faces'
 train_dir = 'training_images'
@@ -80,11 +87,50 @@ def train_model(model, train_dir, epochs=10):
     model.fit(X_train, y_train, epochs=epochs, validation_data=(X_val, y_val))
     print("Model training completed.")
 
+
+
+
+
+# ADDED BY SAHIL
+def load_svm_model():
+    """Load the trained SVM model (if available)."""
+    if os.path.exists('svm_face_classifier.joblib'):
+        return joblib.load('svm_face_classifier.joblib')
+    else:
+        return None  # SVM not yet trained
+
+def double_check_with_svm(predictions, clf):
+    """Double-check the NN prediction with SVM."""
+    if clf is not None:
+        # Reshape the softmax output from Neural Network to match SVM input
+        softmax_vector = np.array(predictions[0]).reshape(1, -1)
+        svm_prediction = clf.predict(softmax_vector)[0]
+        svm_confidence = clf.predict_proba(softmax_vector)[0].max()
+        
+        if svm_confidence > 0.7:  # Confidence threshold (adjustable)
+            return svm_prediction
+        else:
+            return "Unknown"
+    return "Unknown"  # No SVM model loaded, fallback
+
+
+
+
 # Load known faces
 known_face_encodings, known_face_names = load_face_database()
 
 # Create or load the neural network model
 model = create_face_recognition_model(len(known_face_names))
+
+
+
+
+# Load SVM model (ADDED BY SAHIL)
+clf = load_svm_model()
+
+
+
+
 
 # Start video capture
 video_capture = cv2.VideoCapture(0)
@@ -93,6 +139,20 @@ video_capture = cv2.VideoCapture(0)
 saved_frames_dir = "saved_frames"
 if not os.path.exists(saved_frames_dir):
     os.makedirs(saved_frames_dir)
+
+
+
+
+# ADDED BY SAHIL
+if os.path.exists('softmax_outputs.npy'):
+    softmax_outputs_list = np.load('softmax_outputs.npy', allow_pickle=True).tolist()
+    true_labels_list = np.load('true_labels.npy', allow_pickle=True).tolist()
+else:
+    softmax_outputs_list = []
+    true_labels_list = []
+
+
+
 
 while True:
     ret, frame = video_capture.read()
@@ -117,6 +177,15 @@ while True:
         name = "Unknown"
         if confidence > 0.7:
             name = known_face_names[best_match_index]
+
+
+
+
+        # ADDED BY SAHIL
+        name = double_check_with_svm(predictions, clf)
+
+
+
 
         top, right, bottom, left = [v * 4 for v in face_location]
         cv2.rectangle(frame, (left, top), (right, bottom), (0, 255, 0), 2)

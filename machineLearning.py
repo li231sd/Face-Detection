@@ -1,19 +1,23 @@
-from sklearn.ensemble import RandomForestClassifier
-from sklearn.datasets import load_iris
-from sklearn.model_selection import train_test_split
-from sklearn.metrics import accuracy_score
+# ml_classifier.py
+import numpy as np
+from sklearn.svm import SVC
 
-# Load the iris dataset
-iris = load_iris()
-X = iris.data
-y = iris.target
+# Load softmax outputs and true labels saved from the OpenCV + Neural Network
+softmax_outputs = np.load('softmax_outputs.npy')
+true_labels = np.load('true_labels.npy', allow_pickle=True)
 
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+# Train SVM on the softmax outputs
+clf = SVC(kernel='linear', probability=True)
+clf.fit(softmax_outputs, true_labels)
 
-clf = RandomForestClassifier(n_estimators=100, random_state=12)
-clf.fit(X_train, y_train)
+print("✅ SVM trained on Neural Network outputs.")
 
-y_pred = clf.predict(X_test)
+import joblib
+joblib.dump(clf, 'svm_face_classifier.joblib')
 
-print(f"Model Accuracy: {accuracy_score(y_test, y_pred)}")
-
+# Example of how to predict (later during live use)
+def predict_with_svm(softmax_vector):
+    softmax_vector = np.array(softmax_vector).reshape(1, -1)  
+    prediction = clf.predict(softmax_vector)[0]
+    confidence = clf.predict_proba(softmax_vector)[0].max()
+    return prediction, confidence
