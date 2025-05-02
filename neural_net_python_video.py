@@ -82,7 +82,7 @@ class Robot:
         self.heading += 90
         self.heading %= 360
 
-# --- PID Controller ---
+# PID Controller
 class PID:
     def __init__(self, Kp, Ki, Kd):
         self.Kp, self.Ki, self.Kd = Kp, Ki, Kd
@@ -96,7 +96,7 @@ class PID:
         self.prev_error = error
         return output
 
-# --- Main Dashboard GUI ---
+# Main Dashboard GUI with Tkinter
 class RobotApp:
     def __init__(self, root, robot, face_recognition_model):
         self.root = root
@@ -214,7 +214,7 @@ class RobotApp:
         else:
             print("No valid voice command detected.")
 
-# --- Voice Mode Selection ---
+# Voice Mode Selection
 def voice_command():
     recognizer = sr.Recognizer()
     with sr.Microphone() as source:
