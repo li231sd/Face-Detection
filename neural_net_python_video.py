@@ -240,7 +240,6 @@ def voice_command():
         print(f"Error with speech recognition: {e}")
         return None
 
-# --- Main Execution ---
 if __name__ == "__main__":
     root = tk.Tk()
     face_recognition_model = FaceRecognitionModel()
