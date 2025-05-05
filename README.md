@@ -1,2 +1,2 @@
 # Face-Detection
-This is a code that uses OpenCV + arduino + ML to allow users to safely use FaceID to enter their homes.
+This is code that uses OpenCV, Raspberry Pi, and ML to allow users to safely use FaceID to enter their homes.
